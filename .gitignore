@@ -1,0 +1,12 @@
+# Node modules (ignore for all services)
+**/node_modules/
+
+# Build directories
+**/dist/
+**/dist-ssr/
+
+# Editor directories and files
+.vscode/
+
+# .env files
+**/.env
