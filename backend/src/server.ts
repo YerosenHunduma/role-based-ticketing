@@ -1,14 +1,27 @@
 import express from 'express';
+import { config } from 'dotenv';
+import { connectDb } from './config/Dbconfig';
+import routeRoute from './routes';
+import cors from 'cors';
+config();
+
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/', (req, res, next) => {
-    res.send('hello world!');
-});
+app.use(cors());
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-});
+app.use('/api', routeRoute);
+
+connectDb()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error('Database connection error:', error.message);
+    });
