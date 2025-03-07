@@ -9,13 +9,11 @@ import { issueJWT } from '../utils/signToken';
 export const signup = catchAsyncError(async (req, res, next) => {
     const { username, password, role } = req.body;
 
-    console.log(req.body);
-
-    // const error = validationResult(req);
-    // if (!error.isEmpty()) {
-    //     const errorMessage = error.array().map((err) => err.msg);
-    //     return next(new errorHandler(errorMessage[0], 400));
-    // }
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+        const errorMessage = error.array().map((err) => err.msg);
+        return next(new errorHandler(errorMessage[0], 400));
+    }
 
     const user = await userModel.findOne({ username });
     if (user) return next(new errorHandler('User already exists', 400));

@@ -1,9 +1,16 @@
+import { validationResult } from 'express-validator';
 import catchAsyncError from '../middleware/catchAsyncError';
 import ticketModel from '../model/ticket/ticket.model';
 import { errorHandler } from '../utils/errorHandler';
 
 export const createTicket = catchAsyncError(async (req, res, next) => {
     const { title, description } = req.body;
+
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+        const errorMessage = error.array().map((err) => err.msg);
+        return next(new errorHandler(errorMessage[0], 400));
+    }
 
     const ticket = new ticketModel({ title, description, createdBy: req.userId });
 
