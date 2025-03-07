@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { getTickets, createTicket } from '../services/ticket/ticketApiCall';
 import { RootState } from '../redux/app/store';
 import Spinner from '../components/Spinner';
-
+import { FaPlus, FaTicketAlt } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 interface UserDashboardProps {
     userId: string;
     role: string;
@@ -47,50 +48,87 @@ class UserDashboard extends Component<UserDashboardProps, UserDashboardState> {
         try {
             await createTicket({ title, description });
             this.setState({ title: '', description: '' });
+            toast.success('Ticket created successfully.');
             this.fetchTickets();
-        } catch (err) {
-            console.error('Failed to create ticket', err);
+        } catch (err: any) {
+            if (err.response && err.response.data && err.response.data.message) {
+                toast.error(err.response.data.message);
+            } else if (err.request) {
+                toast.error('No response from the server. Please check your network connection.');
+            } else {
+                toast.error('Something went wrong. Please try again later.');
+            }
+        }
+    };
+
+    getStatusColor = (status: string) => {
+        switch (status.toLowerCase()) {
+            case 'open':
+                return 'bg-green-100 text-green-800';
+            case 'closed':
+                return 'bg-gray-100 text-gray-800';
+            default:
+                return 'bg-blue-100 text-blue-800';
         }
     };
 
     render() {
         const { tickets, isLoading, isError, title, description } = this.state;
 
-        if (isLoading) return <Spinner />; // Use the Spinner component
-        if (isError) return <div className="text-red-500">Error fetching tickets</div>;
+        if (isLoading) return <Spinner />;
+        if (isError) return <div className="text-red-500 text-center mt-8">Error fetching tickets. Please try again later.</div>;
 
         return (
-            <div className="p-4">
-                <h1 className="text-2xl font-bold mb-4 text-primary">User Dashboard</h1>
-                <form onSubmit={this.handleCreateTicket} className="mb-6">
-                    <h2 className="text-xl font-semibold mb-4 text-secondary">Create New Ticket</h2>
-                    <input
-                        type="text"
-                        placeholder="Title"
-                        value={title}
-                        onChange={(e) => this.setState({ title: e.target.value })}
-                        className="w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                    <textarea
-                        placeholder="Description"
-                        value={description}
-                        onChange={(e) => this.setState({ description: e.target.value })}
-                        className="w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                    <button type="submit" className="w-full bg-primary text-white py-2 rounded-lg hover:bg-lightprimary transition duration-300">
-                        Create Ticket
-                    </button>
-                </form>
-                <h2 className="text-xl font-semibold mb-4 text-secondary">Your Tickets</h2>
-                <ul className="space-y-2">
-                    {tickets.map((ticket) => (
-                        <li key={ticket._id} className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold text-pblack">{ticket.title}</h3>
-                            <p className="text-gray-600">{ticket.description}</p>
-                            <p className="text-sm text-pgray">Status: {ticket.status}</p>
-                        </li>
-                    ))}
-                </ul>
+            <div className="p-6 bg-gray-100 min-h-screen">
+                <div className="max-w-5xl mx-auto">
+                    <h1 className="text-3xl font-bold mb-6 text-cyan-900 flex items-center">
+                        <FaTicketAlt className="mr-2" /> User Dashboard
+                    </h1>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 ">
+                        <form onSubmit={this.handleCreateTicket} className="mb-8 bg-white p-6 rounded-lg shadow-md h-fit">
+                            <h2 className="text-xl font-semibold mb-4 text-cyan-800 flex items-center">
+                                <FaPlus className="mr-2" /> Create New Ticket
+                            </h2>
+                            <input
+                                type="text"
+                                placeholder="Title"
+                                value={title}
+                                onChange={(e) => this.setState({ title: e.target.value })}
+                                className="w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                            />
+                            <textarea
+                                placeholder="Description"
+                                value={description}
+                                onChange={(e) => this.setState({ description: e.target.value })}
+                                className="w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                rows={4}
+                            />
+                            <button type="submit" className="w-full bg-cyan-900 text-white py-2 rounded-lg hover:bg-cyan-800 transition duration-300 flex items-center cursor-pointer justify-center">
+                                <FaPlus className="mr-2" /> {this.state.isLoading ? 'Creating...' : 'Create Ticket'}
+                            </button>
+                        </form>
+                        <div className="bg-white p-6">
+                            <h2 className="text-xl font-semibold mb-4 text-cyan-800 flex items-center">
+                                <FaTicketAlt className="mr-2" /> Your Tickets
+                            </h2>
+                            {tickets.length > 0 ? (
+                                <ul className="space-y-4">
+                                    {tickets.map((ticket) => (
+                                        <li key={ticket._id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                                            <h3 className="text-lg font-semibold text-cyan-900">{ticket.title}</h3>
+                                            <p className="text-gray-600 mt-2">{ticket.description}</p>
+                                            <div className="mt-3">
+                                                <span className={`inline-block px-3 py-1 text-sm font-semibold rounded-full ${this.getStatusColor(ticket.status)}`}>{ticket.status}</span>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <h1 className="text-gray-700">You don't have any tickets</h1>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

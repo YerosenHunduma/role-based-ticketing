@@ -27,34 +27,27 @@ class Header extends Component<HeaderProps> {
         const { user } = this.props;
 
         return (
-            <header className="bg-white shadow-md">
-                <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                    <Link to="/" className="text-black text-2xl font-bold">
-                        Ticketing System
-                    </Link>
-                    <nav className="flex space-x-4">
-                        {user ? (
-                            <>
-                                <Link to={user.role === 'admin' ? '/admin' : '/user'} className="text-black hover:text-lightprimary transition duration-300">
-                                    Dashboard
+            <>
+                {user ? (
+                    <div className="bg-cyan-950">
+                        {' '}
+                        <header className="max-w-screen-xl mx-auto shadow-md">
+                            <div className="container text-white mx-auto px-4 py-4 flex justify-between items-center">
+                                <Link to="/" className=" text-2xl font-bold">
+                                    <h1>Ticketing System</h1>
                                 </Link>
-                                <button onClick={this.handleLogout} className="text-black hover:text-lightprimary transition duration-300">
-                                    Logout
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                <Link to="/login" className="text-black hover:text-lightprimary transition duration-300">
-                                    Login
-                                </Link>
-                                <Link to="/signup" className="text-black hover:text-lightprimary transition duration-300">
-                                    Signup
-                                </Link>
-                            </>
-                        )}
-                    </nav>
-                </div>
-            </header>
+                                <nav className="flex space-x-4">
+                                    <button onClick={this.handleLogout} className=" transition duration-300 cursor-pointer">
+                                        Logout
+                                    </button>
+                                </nav>
+                            </div>
+                        </header>
+                    </div>
+                ) : (
+                    <></>
+                )}
+            </>
         );
     }
 }

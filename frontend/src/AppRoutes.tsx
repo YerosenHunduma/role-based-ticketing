@@ -5,14 +5,18 @@ import User from './pages/User';
 import Admin from './pages/Admin';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
+import AuthRoute from './components/AuthRoute';
 function AppContent() {
     const navigate = useNavigate();
 
     return (
         <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login navigate={navigate} />} />
-            <Route path="/signup" element={<Signup navigate={navigate} />} />
+
+            <Route element={<AuthRoute />}>
+                <Route path="/login" element={<Login navigate={navigate} />} />
+                <Route path="/signup" element={<Signup navigate={navigate} />} />
+            </Route>
             <Route element={<ProtectedRoute allowedRoles={['user']} />}>
                 <Route path="/user" element={<User />} />
             </Route>
