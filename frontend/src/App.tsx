@@ -1,11 +1,17 @@
+import { BrowserRouter as Router } from 'react-router-dom';
+
+import { ToastContainer } from 'react-toastify';
+import AppContent from './AppRoutes';
+
 function App() {
-  return (
-    <>
-      <body>
-        <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      </body>
-    </>
-  );
+    return (
+        <>
+            <Router>
+                <AppContent />
+            </Router>
+            <ToastContainer />
+        </>
+    );
 }
 
 export default App;

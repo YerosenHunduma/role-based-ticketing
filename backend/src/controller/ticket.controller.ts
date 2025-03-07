@@ -8,7 +8,7 @@ export const createTicket = catchAsyncError(async (req, res, next) => {
     const ticket = new ticketModel({ title, description, createdBy: req.userId });
 
     await ticket.save();
-    res.json(ticket);
+    res.status(200).json({ message: 'User registered successfully', ticket });
 });
 
 export const getAllTickets = catchAsyncError(async (req, res, next) => {
@@ -25,5 +25,5 @@ export const updateTicket = catchAsyncError(async (req, res, next) => {
 
     ticket.status = status;
     await ticket.save();
-    res.status(200).json(ticket);
+    res.status(200).json({ message: 'Ticket updated successfully', ticket });
 });

@@ -17,7 +17,6 @@ interface JwtPayload extends JwtPayloadType {
 
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
     const accessToken = req.cookies?.access_token;
-
     if (!accessToken) {
         return next(new errorHandler('Your session has expired. Please log in again to continue.', 401));
     }
